@@ -1,0 +1,4 @@
+model,accuracy,precision,recall,f1_score
+Logistic Regression,0.62,0.61,0.62,0.61
+SVM,0.64,0.62,0.61,0.61
+Random Forest,0.62,0.61,0.61,0.61
