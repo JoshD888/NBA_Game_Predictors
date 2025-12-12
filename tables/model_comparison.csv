@@ -1,4 +1,6 @@
 model,accuracy,precision,recall,f1_score
 Logistic Regression (tuned),0.62,0.61,0.61,0.61
-SVM (tuned),0.63,0.61,0.62,0.62
-Random Forest (tuned),0.62,0.61,0.61,0.61
+SVM (tuned),0.64,0.63,0.64,0.63
+Random Forest (tuned),0.62,0.62,0.62,0.61
+Ensemble Soft Voting,0.63,0.62,0.62,0.62
+Ensemble Weighted Soft Voting,0.63,0.61,0.62,0.61
