@@ -1,4 +1,4 @@
-#!/Users/joshuademontigny/Downloads/ML_NBA_Project/.venv/bin/python
+#!/Users/joshuademontigny/Downloads/ML_NBA_Project/.venv/bin/python3.11
 import sys
 from numpy.f2py.f2py2e import main
 if __name__ == '__main__':

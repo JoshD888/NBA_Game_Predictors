@@ -4,9 +4,6 @@ from nba_api.stats.endpoints import TeamGameLog
 from nba_api.stats.static import teams
 import os
 
-# ----------------------
-# CONFIG
-# ----------------------
 all_teams = teams.get_teams()  # list of dicts with team info
 seasons = [f"{y}-{str(y+1)[-2:]}" for y in range(2021, 2026)]  # last 10 seasons
 season_type = "Regular Season"
@@ -16,9 +13,7 @@ rate_limit = 1.2  # seconds between API calls
 # Make output directory
 os.makedirs(output_dir, exist_ok=True)
 
-# ----------------------
-# LOOP OVER TEAMS AND SEASONS
-# ----------------------
+# Loop through teams and seasons
 for team in all_teams:
     team_name = team['full_name']
     team_id = team['id']
@@ -36,7 +31,7 @@ for team in all_teams:
             df = tg.get_data_frames()[0]
 
             if df.empty:
-                print(f"⚠️ No games found for {team_name} in {season}")
+                print(f"No games found for {team_name} in {season}")
                 continue
 
             # Save to Parquet
