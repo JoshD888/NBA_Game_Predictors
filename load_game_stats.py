@@ -5,7 +5,7 @@ from nba_api.stats.static import teams
 import os
 
 all_teams = teams.get_teams()  # list of dicts with team info
-seasons = [f"{y}-{str(y+1)[-2:]}" for y in range(2021, 2026)]  # last 10 seasons
+seasons = [f"{y}-{str(y+1)[-2:]}" for y in range(2021, 2026)]  # last 5 seasons
 season_type = "Regular Season"
 output_dir = "team_game_data/"
 rate_limit = 1.2  # seconds between API calls
