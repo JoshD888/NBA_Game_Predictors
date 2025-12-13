@@ -3,26 +3,25 @@ import glob
 import numpy as np
 import os
 
-# --- 1️⃣ Load and combine all team-season files ---
+# --- Load and combine all team-season files ---
 all_files = glob.glob("live_demo_games.parquet")
 games_df = pd.concat([pd.read_parquet(f) for f in all_files], ignore_index=True)
 
-# --- 2️⃣ Clean and sort chronologically ---
+# --- Clean and sort chronologically ---
 games_df['GAME_DATE'] = pd.to_datetime(games_df['GAME_DATE'], format='%b %d, %Y')
 games_df.sort_values(['Team_ID', 'GAME_DATE'], inplace=True)
 
-# --- 3️⃣ Create target variable (Win/Loss as 1/0) ---
+# --- Create target variable (Win/Loss as 1/0) ---
 games_df['TARGET_WL'] = games_df['WL'].map({'W': 1, 'L': 0})
 
-# --- 4️⃣ Add home/away feature ---
+# --- Add home/away feature ---
 games_df['HOME'] = games_df['MATCHUP'].str.contains('vs').astype(int)
 
-# --- 5️⃣ Extract opponent short name ---
+# --- Extract opponent short name ---
 games_df['OPP_TEAM'] = games_df['MATCHUP'].str.extract(r'(?:vs\.|@)\s+([A-Z]+)')
 
 # ==========================================
-# 🆕 6️⃣ SCHEDULE & FATIGUE FEATURES
-# ==========================================
+# SCHEDULE & FATIGUE FEATURES
 
 def add_schedule_features(df):
     """
@@ -124,9 +123,9 @@ def add_schedule_features(df):
     return df
 
 # Apply schedule features
-print("🔄 Adding schedule and fatigue features...")
+print("Adding schedule and fatigue features...")
 games_df = add_schedule_features(games_df)
-print("✅ Added schedule and fatigue features")
+print("Added schedule and fatigue features")
 
 # --- 7️⃣ Compute rolling win count over last 10 games ---
 def rolling_win_count(series, window=10):
@@ -138,8 +137,7 @@ games_df['TEAM_LAST10_WINS'] = (
 )
 
 # ==========================================
-# 🆕 8️⃣ STRENGTH OF SCHEDULE FEATURES
-# ==========================================
+# STRENGTH OF SCHEDULE FEATURES
 
 # Calculate team's recent win percentage (last 10 games)
 games_df['TEAM_WIN_PCT_LAST10'] = games_df['TEAM_LAST10_WINS'] / 10.0
@@ -151,7 +149,7 @@ stats_cols = [
     'AST', 'STL', 'BLK', 'TOV', 'PF', 'PTS'
 ]
 
-print("🔄 Computing rolling averages...")
+print(" Computing rolling averages...")
 for col in stats_cols:
     games_df[f'{col}_rolling5'] = (
         games_df.groupby('Team_ID')[col]
@@ -159,8 +157,7 @@ for col in stats_cols:
     )
 
 # ==========================================
-# 🆕 10️⃣ ADVANCED EFFICIENCY METRICS
-# ==========================================
+# ADVANCED EFFICIENCY METRICS
 
 def add_efficiency_metrics(df):
     """
@@ -191,11 +188,11 @@ def add_efficiency_metrics(df):
     
     return df
 
-print("🔄 Adding efficiency metrics...")
+print("Adding efficiency metrics...")
 games_df = add_efficiency_metrics(games_df)
-print("✅ Added efficiency metrics")
+print("Added efficiency metrics")
 
-# --- 11️⃣ Prepare opponent rolling stats & features ---
+# --- Prepare opponent rolling stats & features ---
 rolling_cols = [c for c in games_df.columns if c.endswith('_rolling5')]
 schedule_cols = [
     'DAYS_REST', 'BACK_TO_BACK', 'GAMES_IN_LAST_7', 'GAMES_IN_LAST_14',
@@ -208,7 +205,7 @@ opp_features = ['TEAM_LAST10_WINS', 'TEAM_WIN_PCT_LAST10'] + rolling_cols + sche
 opp_rolls = games_df[['Game_ID', 'Team_ID'] + opp_features].copy()
 
 # Merge to attach opponent features
-print("🔄 Merging opponent features...")
+print("Merging opponent features...")
 merged = games_df.merge(
     opp_rolls,
     how='left',
@@ -220,10 +217,9 @@ merged = games_df.merge(
 merged = merged[merged['Team_ID'] != merged['Team_ID_opp']]
 
 # ==========================================
-# 🆕 12️⃣ CREATE DIFFERENTIAL FEATURES
-# ==========================================
+# CREATE DIFFERENTIAL FEATURES
 
-print("🔄 Creating differential features...")
+print("Creating differential features...")
 
 # Win percentage differential
 merged['WIN_PCT_DIFF'] = (
@@ -252,9 +248,9 @@ merged['REST_ADVANTAGE'] = (
     merged['DAYS_REST'] - merged['DAYS_REST_opp']
 )
 
-print("✅ Added differential features")
+print("Added differential features")
 
-# --- 13️⃣ Drop unnecessary columns ---
+# --- Drop unnecessary columns ---
 drop_cols = [
     'W', 'L', 'WL', 'W_PCT', 'MATCHUP', 'MIN',
     'FGM_rolling5', 'FG3M_rolling5', 'FTM_rolling5', 'REB_rolling5',
@@ -267,13 +263,13 @@ drop_cols += stats_cols
 
 merged = merged.drop(columns=[c for c in drop_cols if c in merged.columns])
 
-# --- 14️⃣ Drop NA rows ---
+# --- Drop NA rows ---
 initial_rows = len(merged)
 merged = merged.dropna()
-print(f"✅ Dropped {initial_rows - len(merged)} rows with NA values. Remaining rows: {len(merged)}")
+print(f"Dropped {initial_rows - len(merged)} rows with NA values. Remaining rows: {len(merged)}")
 
 # --- 14.5️⃣ Check correlations and remove redundant features ---
-print("🔄 Analyzing feature correlations...")
+print("Analyzing feature correlations...")
 
 # Only analyze numeric columns (exclude Team_ID, Game_ID, etc.)
 numeric_cols = merged.select_dtypes(include=[np.number]).columns
@@ -287,12 +283,12 @@ high_corr = [(col, row, upper.loc[row, col])
              if pd.notnull(upper.loc[row, col]) and abs(upper.loc[row, col]) > 0.85]
 
 if high_corr:
-    print(f"⚠️  Found {len(high_corr)} highly correlated feature pairs (|r| > 0.85)")
+    print(f"Found {len(high_corr)} highly correlated feature pairs (|r| > 0.85)")
     # Optionally print top 5 to see what's correlated
     # for pair in high_corr[:5]:
     #     print(f"  {pair[1]} <-> {pair[0]}: {pair[2]:.3f}")
 
-print("🔄 Removing redundant features...")
+print("Removing redundant features...")
 
 # List of redundant features to drop
 redundant_cols = [
@@ -334,16 +330,16 @@ if 'WIN_PCT_DIFF' in merged.columns:
         merged['TEAM_LAST10_WINS'] - merged['TEAM_LAST10_WINS_opp']
     ) / 10.0  # Normalize to -1 to 1 scale
 
-print(f"✅ Dropped {len(cols_to_drop)} redundant features")
+print(f"Dropped {len(cols_to_drop)} redundant features")
 
-# --- 15️⃣ Save processed dataset ---
+# --- Save processed dataset ---
 output_path = "demo.parquet"
 merged.to_parquet(output_path, index=False)
-print(f"✅ Saved processed dataset: {output_path}")
+print(f"Saved processed dataset: {output_path}")
 
 # Print summary
 print("\n" + "="*60)
-print("📊 FEATURE SUMMARY")
+print("FEATURE SUMMARY")
 print("="*60)
 print(f"Schedule Features: {schedule_cols}")
 print(f"Efficiency Features: {['EFG_PCT_rolling5', 'TOV_RATE_rolling5', 'OREB_RATE_rolling5', 'FT_RATE_rolling5', 'PACE_rolling5']}")
