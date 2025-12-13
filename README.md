@@ -6,17 +6,18 @@ This project predicts NBA game outcomes using supervised machine learning models
 ## Repository Structure
 
 code/
-├── load_game_stats.py          # Collects raw team game logs
-├── prepare_features.py         # Builds final modeling dataset
+├── load_game_stats.py # Collects raw team game logs
+├── prepare_features.py # Builds final modeling dataset
 ├── models/
-│   ├── baseline_models.py
-│   ├── xgboost_model.py
-│   └── ensemble_models.py
+│ ├── baseline_models.py
+│ ├── xgboost_model.py
+│ └── ensemble_models.py
 ├── evaluation.py
 ├── visualization.py
 data/
 results/
 notebooks/
+
 
 ## Data Pipeline Overview
 The data pipeline consists of two stages:
