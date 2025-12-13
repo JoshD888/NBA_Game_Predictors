@@ -3,29 +3,6 @@
 
 This project predicts NBA game outcomes using supervised machine learning models trained on team-level performance metrics and contextual features. Multiple algorithms—including Logistic Regression, SVM, Random Forest, and XGBoost—are evaluated under a unified pipeline to assess predictive performance and fundamental accuracy limits.
 
-## Repository Structure
-
-code/
-├── load_game_stats.py # Collects raw team game logs
-├── prepare_features.py # Builds final modeling dataset
-├── load_demo_data.py # Loads new NBA games for demo purposes
-├── prepare_demo_features.py # Builds features for demo dataset
-├── models/
-│ ├── baseline_models.py
-│ ├── xgboost_model.py
-│ └── ensemble_models.py
-├── evaluation.py
-├── visualization.py
-
-data/
-results/
-notebooks/
-├── EDA.ipynb # Performs exploratory data analysis
-├── hyper_param_tuning.ipynb # Performs hyperparameter tuning (already saved; does not need to be rerun)
-├── models.ipynb # Trains and evaluates the 4 models
-├── pca_models.ipynb # Trains models using PCA (10 principal components)
-├── demo.ipynb # Trains on all_teams_last10seasons.parquet and tests using demo data
-
 ## Data Pipeline Overview
 
 The data pipeline consists of two stages:
