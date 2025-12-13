@@ -11,6 +11,10 @@ games_df = pd.concat([pd.read_parquet(f) for f in all_files], ignore_index=True)
 games_df['GAME_DATE'] = pd.to_datetime(games_df['GAME_DATE'], format='%b %d, %Y')
 games_df.sort_values(['Team_ID', 'GAME_DATE'], inplace=True)
 
+# Remove rows after July 2025
+cutoff_date = pd.Timestamp('2025-07-31')
+games_df = games_df[games_df['GAME_DATE'] <= cutoff_date]
+
 # --- 3️⃣ Create target variable (Win/Loss as 1/0) ---
 games_df['TARGET_WL'] = games_df['WL'].map({'W': 1, 'L': 0})
 
