@@ -12,7 +12,7 @@ rate_limit = 1.2  # seconds between API calls
 
 # Make output directory
 os.makedirs(output_dir, exist_ok=True)
-
+ 
 # Loop through teams and seasons
 for team in all_teams:
     team_name = team['full_name']
