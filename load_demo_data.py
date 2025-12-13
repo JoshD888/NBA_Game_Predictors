@@ -8,7 +8,7 @@ recent_games = []
 for team in teams.get_teams():
     try:
         tg = TeamGameLog(team_id=team['id'], season="2025-26", season_type_all_star="Regular Season")
-        df = tg.get_data_frames()[0].head(15)  # last 10 games
+        df = tg.get_data_frames()[0].head(15)  # last 15 games
         df['Team_ID'] = team['id']
         recent_games.append(df)
     except Exception as e:
