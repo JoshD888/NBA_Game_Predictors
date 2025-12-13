@@ -32,7 +32,7 @@ This script:
 
 Queries NBA.com via the nba_api client
 
-Collects regular-season games for all teams from 2021–2022 through 2025–2026
+Collects regular-season games for all teams from 2021–2022 through the first couple games of 2025–2026
 
 Saves one Parquet file per team per season to team_game_data/
 
